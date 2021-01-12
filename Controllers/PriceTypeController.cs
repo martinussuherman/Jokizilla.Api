@@ -32,6 +32,7 @@ namespace Jokizilla.Api.Controllers
         public IQueryable<PriceTypeViewDto> Get()
         {
             return _context.PriceTypes
+                .AsNoTracking()
                 .ProjectTo<PriceTypeViewDto>(_mapper.ConfigurationProvider);
         }
 
@@ -43,6 +44,7 @@ namespace Jokizilla.Api.Controllers
         {
             return SingleResult.Create(
                 _context.PriceTypes
+                    .AsNoTracking()
                     .Where(e => e.Id == id)
                     .ProjectTo<PriceTypeViewDto>(_mapper.ConfigurationProvider));
         }

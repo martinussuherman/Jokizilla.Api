@@ -32,6 +32,7 @@ namespace Jokizilla.Api.Controllers
         public IQueryable<UrgencyViewDto> Get()
         {
             return _context.Urgencies
+                .AsNoTracking()
                 .ProjectTo<UrgencyViewDto>(_mapper.ConfigurationProvider);
         }
 
@@ -43,6 +44,7 @@ namespace Jokizilla.Api.Controllers
         {
             return SingleResult.Create(
                 _context.Urgencies
+                    .AsNoTracking()
                     .Where(e => e.Id == id)
                     .ProjectTo<UrgencyViewDto>(_mapper.ConfigurationProvider));
         }

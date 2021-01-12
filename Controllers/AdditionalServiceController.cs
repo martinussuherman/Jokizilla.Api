@@ -16,7 +16,7 @@ using static Microsoft.AspNetCore.Http.StatusCodes;
 namespace Jokizilla.Api.Controllers
 {
     [Produces(JsonOutput)]
-    [ODataRoutePrefix(nameof(PriceType))]
+    [ODataRoutePrefix(nameof(AdditionalService))]
     [ApiVersionNeutral]
     public class AdditionalServiceController : ODataController
     {
@@ -32,6 +32,7 @@ namespace Jokizilla.Api.Controllers
         public IQueryable<AdditionalServiceViewDto> Get()
         {
             return _context.AdditionalServices
+                .AsNoTracking()
                 .ProjectTo<AdditionalServiceViewDto>(_mapper.ConfigurationProvider);
         }
 
@@ -43,6 +44,7 @@ namespace Jokizilla.Api.Controllers
         {
             return SingleResult.Create(
                 _context.AdditionalServices
+                    .AsNoTracking()
                     .Where(e => e.Id == id)
                     .ProjectTo<AdditionalServiceViewDto>(_mapper.ConfigurationProvider));
         }

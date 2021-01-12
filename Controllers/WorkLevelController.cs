@@ -32,6 +32,7 @@ namespace Jokizilla.Api.Controllers
         public IQueryable<WorkLevelViewDto> Get()
         {
             return _context.WorkLevels
+                .AsNoTracking()
                 .ProjectTo<WorkLevelViewDto>(_mapper.ConfigurationProvider);
         }
 
@@ -43,6 +44,7 @@ namespace Jokizilla.Api.Controllers
         {
             return SingleResult.Create(
                 _context.WorkLevels
+                    .AsNoTracking()
                     .Where(e => e.Id == id)
                     .ProjectTo<WorkLevelViewDto>(_mapper.ConfigurationProvider));
         }

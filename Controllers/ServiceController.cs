@@ -32,6 +32,7 @@ namespace Jokizilla.Api.Controllers
         public IQueryable<ServiceViewDto> Get()
         {
             return _context.Services
+                .AsNoTracking()
                 .ProjectTo<ServiceViewDto>(_mapper.ConfigurationProvider);
         }
 
@@ -43,6 +44,7 @@ namespace Jokizilla.Api.Controllers
         {
             return SingleResult.Create(
                 _context.Services
+                    .AsNoTracking()
                     .Where(e => e.Id == id)
                     .ProjectTo<ServiceViewDto>(_mapper.ConfigurationProvider));
         }
@@ -76,6 +78,7 @@ namespace Jokizilla.Api.Controllers
             }
 
             return Created(await _context.Services
+                .AsNoTracking()
                 .Where(e => e.Id == item.Id)
                 .ProjectTo<ServiceViewDto>(_mapper.ConfigurationProvider)
                 .SingleAsync());
