@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoMapper;
 using Jokizilla.Models.Models;
 using Jokizilla.Models.ViewModels;
@@ -16,7 +17,11 @@ namespace Jokizilla.Api.Misc
             CreateMap<PriceTypeUpdateDto, PriceType>();
             CreateMap<PriceType, PriceTypeUpdateDto>();
 
-            CreateMap<Service, ServiceViewDto>();
+            CreateMap<Service, ServiceViewDto>()
+                .ForMember(
+                    dto => dto.AdditionalServices,
+                    opt => opt.MapFrom(
+                        src => src.ServiceTagAdditionalServices.Select(e => e.AdditionalService)));
             CreateMap<ServiceUpdateDto, Service>();
             CreateMap<Service, ServiceUpdateDto>();
 
