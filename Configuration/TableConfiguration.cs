@@ -16,7 +16,7 @@ namespace Jokizilla.Api.Configuration
             ComplexTypeConfiguration<AdditionalServiceUpdateDto> additionalServiceUpdate = builder
                 .ComplexType<AdditionalServiceUpdateDto>();
             EntityTypeConfiguration<AdditionalServiceViewDto> additionalService = builder
-                .EntitySet<AdditionalServiceViewDto>(nameof(AppDbContext.AdditionalServices))
+                .EntitySet<AdditionalServiceViewDto>(nameof(AdditionalService))
                 .EntityType;
 
             additionalService.HasKey(p => p.Id);
@@ -29,7 +29,7 @@ namespace Jokizilla.Api.Configuration
             ComplexTypeConfiguration<PriceTypeUpdateDto> priceTypeUpdate = builder
                 .ComplexType<PriceTypeUpdateDto>();
             EntityTypeConfiguration<PriceTypeViewDto> priceType = builder
-                .EntitySet<PriceTypeViewDto>(nameof(AppDbContext.PriceTypes))
+                .EntitySet<PriceTypeViewDto>(nameof(PriceType))
                 .EntityType;
 
             priceType.HasKey(p => p.Id);
@@ -42,11 +42,12 @@ namespace Jokizilla.Api.Configuration
             ComplexTypeConfiguration<ServiceUpdateDto> serviceUpdate = builder
                 .ComplexType<ServiceUpdateDto>();
             EntityTypeConfiguration<ServiceViewDto> service = builder
-                .EntitySet<ServiceViewDto>(nameof(AppDbContext.Services))
+                .EntitySet<ServiceViewDto>(nameof(Service))
                 .EntityType;
 
             service.HasKey(p => p.Id);
             service
+                .Expand()
                 .Filter()
                 .OrderBy()
                 .Page(50, 50)
@@ -55,7 +56,7 @@ namespace Jokizilla.Api.Configuration
             ComplexTypeConfiguration<UrgencyUpdateDto> urgencyUpdate = builder
                 .ComplexType<UrgencyUpdateDto>();
             EntityTypeConfiguration<UrgencyViewDto> urgency = builder
-                .EntitySet<UrgencyViewDto>(nameof(AppDbContext.Urgencies))
+                .EntitySet<UrgencyViewDto>(nameof(Urgency))
                 .EntityType;
 
             urgency.HasKey(p => p.Id);
@@ -68,7 +69,7 @@ namespace Jokizilla.Api.Configuration
             ComplexTypeConfiguration<WorkLevelUpdateDto> workLevelUpdate = builder
                 .ComplexType<WorkLevelUpdateDto>();
             EntityTypeConfiguration<WorkLevelViewDto> workLevel = builder
-                .EntitySet<WorkLevelViewDto>(nameof(AppDbContext.WorkLevels))
+                .EntitySet<WorkLevelViewDto>(nameof(WorkLevel))
                 .EntityType;
 
             workLevel.HasKey(p => p.Id);
