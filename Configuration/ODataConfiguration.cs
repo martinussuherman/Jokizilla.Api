@@ -6,15 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Jokizilla.Api.Configuration
 {
     /// <summary>
-    /// Represents the model configuration for Price Type.
+    /// Represents the model configuration.
     /// </summary>
-    public class TableConfiguration : IModelConfiguration
+    public class ODataConfiguration : IModelConfiguration
     {
         /// <inheritdoc />
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            ComplexTypeConfiguration<AdditionalServiceUpdateDto> additionalServiceUpdate = builder
-                .ComplexType<AdditionalServiceUpdateDto>();
+            builder.ComplexType<AdditionalServiceUpdateDto>();
             EntityTypeConfiguration<AdditionalServiceViewDto> additionalService = builder
                 .EntitySet<AdditionalServiceViewDto>(nameof(AdditionalService))
                 .EntityType;
@@ -26,8 +25,43 @@ namespace Jokizilla.Api.Configuration
                 .Page(50, 50)
                 .Select();
 
-            ComplexTypeConfiguration<PriceTypeUpdateDto> priceTypeUpdate = builder
-                .ComplexType<PriceTypeUpdateDto>();
+            builder.ComplexType<ApplicantUpdateDto>();
+            EntityTypeConfiguration<ApplicantViewDto> applicant = builder
+                .EntitySet<ApplicantViewDto>(nameof(Applicant))
+                .EntityType;
+
+            applicant.HasKey(p => p.Id);
+            applicant
+                .Filter()
+                .OrderBy()
+                .Page(50, 50)
+                .Select();
+
+            builder.ComplexType<ApplicantStatusUpdateDto>();
+            EntityTypeConfiguration<ApplicantStatusViewDto> applicantStatus = builder
+                .EntitySet<ApplicantStatusViewDto>(nameof(ApplicantStatus))
+                .EntityType;
+
+            applicantStatus.HasKey(p => p.Id);
+            applicantStatus
+                .Filter()
+                .OrderBy()
+                .Page(50, 50)
+                .Select();
+
+            builder.ComplexType<CountryUpdateDto>();
+            EntityTypeConfiguration<CountryViewDto> country = builder
+                .EntitySet<CountryViewDto>(nameof(Country))
+                .EntityType;
+
+            country.HasKey(p => p.Id);
+            country
+                .Filter()
+                .OrderBy()
+                .Page(50, 50)
+                .Select();
+
+            builder.ComplexType<PriceTypeUpdateDto>();
             EntityTypeConfiguration<PriceTypeViewDto> priceType = builder
                 .EntitySet<PriceTypeViewDto>(nameof(PriceType))
                 .EntityType;
@@ -39,8 +73,19 @@ namespace Jokizilla.Api.Configuration
                 .Page(50, 50)
                 .Select();
 
-            ComplexTypeConfiguration<ServiceUpdateDto> serviceUpdate = builder
-                .ComplexType<ServiceUpdateDto>();
+            builder.ComplexType<ReferralSourceUpdateDto>();
+            EntityTypeConfiguration<ReferralSourceViewDto> referralSource = builder
+                .EntitySet<ReferralSourceViewDto>(nameof(ReferralSource))
+                .EntityType;
+
+            referralSource.HasKey(p => p.Id);
+            referralSource
+                .Filter()
+                .OrderBy()
+                .Page(50, 50)
+                .Select();
+
+            builder.ComplexType<ServiceUpdateDto>();
             EntityTypeConfiguration<ServiceViewDto> service = builder
                 .EntitySet<ServiceViewDto>(nameof(Service))
                 .EntityType;
@@ -53,8 +98,7 @@ namespace Jokizilla.Api.Configuration
                 .Page(50, 50)
                 .Select();
 
-            ComplexTypeConfiguration<UrgencyUpdateDto> urgencyUpdate = builder
-                .ComplexType<UrgencyUpdateDto>();
+            builder.ComplexType<UrgencyUpdateDto>();
             EntityTypeConfiguration<UrgencyViewDto> urgency = builder
                 .EntitySet<UrgencyViewDto>(nameof(Urgency))
                 .EntityType;
@@ -66,8 +110,7 @@ namespace Jokizilla.Api.Configuration
                 .Page(50, 50)
                 .Select();
 
-            ComplexTypeConfiguration<WorkLevelUpdateDto> workLevelUpdate = builder
-                .ComplexType<WorkLevelUpdateDto>();
+            builder.ComplexType<WorkLevelUpdateDto>();
             EntityTypeConfiguration<WorkLevelViewDto> workLevel = builder
                 .EntitySet<WorkLevelViewDto>(nameof(WorkLevel))
                 .EntityType;
