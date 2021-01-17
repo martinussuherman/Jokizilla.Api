@@ -13,9 +13,25 @@ namespace Jokizilla.Api.Misc
             CreateMap<AdditionalServiceUpdateDto, AdditionalService>();
             CreateMap<AdditionalService, AdditionalServiceUpdateDto>();
 
+            CreateMap<Applicant, ApplicantViewDto>();
+            CreateMap<ApplicantUpdateDto, Applicant>();
+            CreateMap<Applicant, ApplicantUpdateDto>();
+
+            CreateMap<ApplicantStatus, ApplicantStatusViewDto>();
+            CreateMap<ApplicantStatusUpdateDto, ApplicantStatus>();
+            CreateMap<ApplicantStatus, ApplicantStatusUpdateDto>();
+
+            CreateMap<Country, CountryViewDto>();
+            CreateMap<CountryUpdateDto, Country>();
+            CreateMap<Country, CountryUpdateDto>();
+
             CreateMap<PriceType, PriceTypeViewDto>();
             CreateMap<PriceTypeUpdateDto, PriceType>();
             CreateMap<PriceType, PriceTypeUpdateDto>();
+
+            CreateMap<ReferralSource, ReferralSourceViewDto>();
+            CreateMap<ReferralSourceUpdateDto, ReferralSource>();
+            CreateMap<ReferralSource, ReferralSourceUpdateDto>();
 
             CreateMap<Service, ServiceViewDto>()
                 .ForMember(
