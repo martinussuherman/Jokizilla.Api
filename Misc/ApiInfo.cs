@@ -5,5 +5,6 @@ namespace Jokizilla.Api.Misc
         internal const string DontSetKeyOnPatch = "must not set on patch.";
         internal const string IdRoute = "{id}";
         internal const string JsonOutput = "application/json";
+        internal const string SchemeOauth2 = "oauth2";
     }
 }
