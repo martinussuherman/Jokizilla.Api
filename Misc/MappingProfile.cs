@@ -5,8 +5,14 @@ using Jokizilla.Models.ViewModels;
 
 namespace Jokizilla.Api.Misc
 {
+    /// <summary>
+    /// AutoMapper mapping profile.
+    /// </summary>
     public class MappingProfile : Profile
     {
+        /// <summary>
+        /// Creates AutoMapper mapping profile.
+        /// </summary>
         public MappingProfile()
         {
             CreateMap<AdditionalService, AdditionalServiceViewDto>();
