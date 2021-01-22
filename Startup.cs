@@ -177,7 +177,7 @@ namespace Jokizilla.Api
                     options.OperationFilter<AuthorizeCheckOperationFilter>();
 
                     // integrate xml comments
-                    // options.IncludeXmlComments(XmlCommentsFilePath);
+                    options.IncludeXmlComments(XmlCommentsFilePath);
 
                     options.AddSecurityDefinition(
                         ApiInfo.SchemeOauth2,
