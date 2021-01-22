@@ -47,17 +47,12 @@ namespace Jokizilla.Api
         /// <param name="services">The collection of services to configure the application with.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddMvc(options => options.EnableEndpointRouting = false)
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
-            services.Configure<ApiSecurityOptions>(Configuration.GetSection(ApiSecurityOptions.OptionsName));
-            services.AddAutoMapper(typeof(MappingProfile));
-            services.AddTransient<FileOperation>();
-            services.AddApiVersioning(options => options.ReportApiVersions = true);
-
+            ConfigureMisc(services);
             ConfigureDatabase(services);
-            ApiSecurityOptions apiSecurityOptions = ReadApiSecurityOptions();
+            ConfigureCors(services);
             ConfigureOData(services);
+
+            ApiSecurityOptions apiSecurityOptions = ReadApiSecurityOptions();
             ConfigureSwagger(services, apiSecurityOptions);
             ConfigureAuth(services, apiSecurityOptions);
         }
@@ -74,6 +69,7 @@ namespace Jokizilla.Api
             IApiVersionDescriptionProvider provider)
         {
             app.UseRouting();
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(
@@ -83,27 +79,12 @@ namespace Jokizilla.Api
                     endpoints.MapVersionedODataRoute("odata", "api", modelBuilder);
                 });
 
-            app.UseSwagger();
-            app.UseSwaggerUI(
-                options =>
-                {
-                    options.OAuthClientId(Configuration.GetValue<string>("ClientId"));
-                    options.OAuthAppName("Jokizilla Api Swagger");
-                    options.OAuthUsePkce();
-
-                    // build a swagger endpoint for each discovered API version
-                    foreach (var description in provider.ApiVersionDescriptions)
-                    {
-                        options.SwaggerEndpoint(
-                            $"/swagger/{description.GroupName}/swagger.json",
-                            description.GroupName.ToUpperInvariant());
-                    }
-                });
+            ConfigureSwaggerUI(app, provider);
         }
 
         private void ConfigureDatabase(IServiceCollection services)
         {
-            MariaDbServerVersion version = new(new Version(10, 5, 5));
+            MariaDbServerVersion version = new MariaDbServerVersion(new Version(10, 5, 5));
 
             services.AddDbContextPool<AppDbContext>(
                 options => options.UseMySql(
@@ -121,6 +102,51 @@ namespace Jokizilla.Api
                 Audience = options.GetValue<string>(nameof(ApiSecurityOptions.Audience)),
                 Authority = options.GetValue<string>(nameof(ApiSecurityOptions.Authority))
             };
+        }
+        private void ConfigureMisc(IServiceCollection services)
+        {
+            services
+                .AddMvc(options => options.EnableEndpointRouting = false)
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.Configure<ApiSecurityOptions>(Configuration.GetSection(ApiSecurityOptions.OptionsName));
+            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddTransient<FileOperation>();
+            services.AddApiVersioning(options => options.ReportApiVersions = true);
+        }
+        private void ConfigureSwaggerUI(
+            IApplicationBuilder app,
+            IApiVersionDescriptionProvider provider)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(
+                options =>
+                {
+                    options.OAuthClientId(Configuration.GetValue<string>("ClientId"));
+                    options.OAuthAppName("Jokizilla Api Swagger");
+                    options.OAuthUsePkce();
+
+                    // build a swagger endpoint for each discovered API version
+                    foreach (var description in provider.ApiVersionDescriptions)
+                    {
+                        options.SwaggerEndpoint(
+                            $"/swagger/{description.GroupName}/swagger.json",
+                            description.GroupName.ToUpperInvariant());
+                    }
+                });
+        }
+        private static void ConfigureCors(IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins(
+                            "http://localhost:*",
+                            "https://localhost:*",
+                            "https://*.marsman.cyou");
+                    });
+            });
         }
         private static void ConfigureOData(IServiceCollection services)
         {
@@ -141,16 +167,6 @@ namespace Jokizilla.Api
             IServiceCollection services,
             ApiSecurityOptions apiSecurityOptions)
         {
-            OpenApiOAuthFlow authCodeFlow = new()
-            {
-                AuthorizationUrl = new Uri($"{apiSecurityOptions.Authority}/connect/authorize"),
-                TokenUrl = new Uri($"{apiSecurityOptions.Authority}/connect/token"),
-                Scopes = new Dictionary<string, string>
-                {
-                    { apiSecurityOptions.Audience, "Api access" }
-                }
-            };
-
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
             services.AddSwaggerGen(
@@ -165,33 +181,9 @@ namespace Jokizilla.Api
 
                     options.AddSecurityDefinition(
                         ApiInfo.SchemeOauth2,
-                        new OpenApiSecurityScheme
-                        {
-                            Type = SecuritySchemeType.OAuth2,
-                            Flows = new OpenApiOAuthFlows
-                            {
-                                AuthorizationCode = authCodeFlow
-                            }
-                        });
+                        ConfigureSecurityDefinitionScheme(apiSecurityOptions));
 
-                    options.AddSecurityRequirement(
-                        new OpenApiSecurityRequirement
-                        {
-                            {
-                                new OpenApiSecurityScheme
-                                {
-                                    Reference = new OpenApiReference
-                                    {
-                                        Type = ReferenceType.SecurityScheme,
-                                        Id = ApiInfo.SchemeOauth2
-                                    }
-                                },
-                                new[]
-                                {
-                                    apiSecurityOptions.Audience
-                                }
-                            }
-                        });
+                    options.AddSecurityRequirement(ConfigureSecurityRequirement(apiSecurityOptions));
                 });
         }
         private static void ConfigureAuth(
@@ -209,6 +201,53 @@ namespace Jokizilla.Api
                     // if you are using API resources, you can specify the name here
                     options.Audience = apiSecurityOptions.Audience;
                 });
+        }
+        private static OpenApiSecurityRequirement ConfigureSecurityRequirement(
+            ApiSecurityOptions apiSecurityOptions)
+        {
+            return new OpenApiSecurityRequirement
+            {
+                {
+                    ConfigureSecurityRequirementScheme(),
+                    new[]
+                    {
+                        apiSecurityOptions.Audience
+                    }
+                }
+            };
+        }
+        private static OpenApiSecurityScheme ConfigureSecurityRequirementScheme()
+        {
+            return new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = ApiInfo.SchemeOauth2
+                }
+            };
+        }
+        private static OpenApiSecurityScheme ConfigureSecurityDefinitionScheme(
+            ApiSecurityOptions apiSecurityOptions)
+        {
+            OpenApiOAuthFlow authCodeFlow = new OpenApiOAuthFlow
+            {
+                AuthorizationUrl = new Uri($"{apiSecurityOptions.Authority}/connect/authorize"),
+                TokenUrl = new Uri($"{apiSecurityOptions.Authority}/connect/token"),
+                Scopes = new Dictionary<string, string>
+                {
+                    { apiSecurityOptions.Audience, "Api access" }
+                }
+            };
+
+            return new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    AuthorizationCode = authCodeFlow
+                }
+            };
         }
 
         private static string XmlCommentsFilePath
