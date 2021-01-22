@@ -182,8 +182,6 @@ namespace Jokizilla.Api
                     options.AddSecurityDefinition(
                         ApiInfo.SchemeOauth2,
                         ConfigureSecurityDefinitionScheme(apiSecurityOptions));
-
-                    options.AddSecurityRequirement(ConfigureSecurityRequirement(apiSecurityOptions));
                 });
         }
         private static void ConfigureAuth(
@@ -201,31 +199,6 @@ namespace Jokizilla.Api
                     // if you are using API resources, you can specify the name here
                     options.Audience = apiSecurityOptions.Audience;
                 });
-        }
-        private static OpenApiSecurityRequirement ConfigureSecurityRequirement(
-            ApiSecurityOptions apiSecurityOptions)
-        {
-            return new OpenApiSecurityRequirement
-            {
-                {
-                    ConfigureSecurityRequirementScheme(),
-                    new[]
-                    {
-                        apiSecurityOptions.Audience
-                    }
-                }
-            };
-        }
-        private static OpenApiSecurityScheme ConfigureSecurityRequirementScheme()
-        {
-            return new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = ApiInfo.SchemeOauth2
-                }
-            };
         }
         private static OpenApiSecurityScheme ConfigureSecurityDefinitionScheme(
             ApiSecurityOptions apiSecurityOptions)
