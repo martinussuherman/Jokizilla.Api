@@ -47,6 +47,9 @@ namespace Jokizilla.Api.Misc
             CreateMap<ServiceUpdateDto, Service>();
             CreateMap<Service, ServiceUpdateDto>();
 
+            CreateMap<ServiceTagAdditionalService, ServiceTagAdditionalServiceDto>();
+            CreateMap<ServiceTagAdditionalServiceDto, ServiceTagAdditionalService>();
+
             CreateMap<Urgency, UrgencyViewDto>();
             CreateMap<UrgencyUpdateDto, Urgency>();
             CreateMap<Urgency, UrgencyUpdateDto>();
